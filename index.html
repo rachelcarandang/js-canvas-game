@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html>
+<head>	
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+</script>
+
+<style>
+@font-face {
+	font-family: 'AmazonEmber';
+	src: url('https://images-na.ssl-images-amazon.com/images/G/01/digital/music/player/font/amazonember_lt_base._V275201041_.ttf') 
+}
+
+@font-face {
+	font-family: 'AmazonEmber';
+	src: url('https://images-na.ssl-images-amazon.com/images/G/01/digital/music/player/font/amazonember_md_base._V275201045_.ttf');
+	font-weight: bold;
+}
+
+body {
+	background: -webkit-gradient(linear, left top, left bottom, from(black), to(gray)) fixed;
+	color: white;
+	font-family: 'AmazonEmber', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+	padding: 0;
+	margin: 0;
+}
+.container {
+	position: fixed;
+	width: 100%;
+	height:100%;
+	padding: 0;
+	margin: 0;
+}
+
+.timer {
+	position: relative;
+	top: 50px;
+	margin: 0 auto;
+	background-color: rgba(255, 255, 255, .3);
+	border-radius: 15px;
+	height: 30px;
+	width: 80px;
+}
+
+.teamScoreText {
+	font-size: 20px;
+	top: 50px;
+	text-align: center;
+}
+
+.team1Text {
+	color: white;
+	position: absolute; 
+	width: auto;
+	height: auto;
+	left: 50px;
+}
+
+.team1Score {
+	color: white;
+	position: relative; 
+	top: 15px;
+}
+
+.team2Text {
+	color: white;
+	position: absolute; 
+	width: auto;
+	height: auto;
+	right: 50px;
+	text-align: right;
+}
+
+.team2Score {
+	color: white;
+	position: relative; 
+	top: 15px;
+}
+
+.teamSelected {
+	color: #53aef5;
+	text-decoration: underline;
+}
+
+.scoreSelected {
+	color: #53aef5;
+	text-decoration: none;
+}
+
+
+/*https://stackoverflow.com/questions/6865194/fluid-width-with-equally-spaced-divs*/
+.optionsContainer {
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	right: 10px;
+	height: 50%;
+	width: auto;
+}
+
+.optionBox {
+	position: absolute;
+	height: 47.5%;
+	width: 49%;
+	border: 2px solid gray;
+	background-color: rgba(255, 255, 255, .15);;
+}
+
+.optionBoxA {
+	left: 0;
+	top: 0;
+}
+
+.optionBoxB {
+	right: 0;
+	top: 0;
+}
+
+.optionBoxC {
+	left: 0;
+	bottom: 0;
+}
+
+.optionBoxD {
+	right: 0;
+	bottom: 0;
+}
+
+.optionLetterText {
+	position: absolute;
+	font-size: 36px;
+	top: 30px;
+	left: 30px;
+}
+
+.optionValue {
+	position: absolute;
+	top: 80px;
+	left: 30px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div id="container" class="container">
+
+	<div id="timer" class="timer">
+	</div>
+
+	<div id="team1Text" class="teamScoreText team1Text">
+	TEAM 1
+		<div id="team1Score" class="teamScoreText">
+		0
+		</div>
+	</div>
+
+	<div id="team2Text" class="teamScoreText team2Text teamSelected">
+	TEAM 2
+		<div id="team2Score" class="teamScoreText scoreSelected">
+		0
+		</div>
+	</div>
+
+	<div id="optionsContainer" class="optionsContainer">
+		<div id="optionBoxA" class="optionBox optionBoxA">
+			<div id="optionLetterText" class="optionLetterText">
+			A
+			</div>
+			<div id="optionAValue" class="optionValue">
+			Option Value
+			</div>
+		</div>
+
+		<div id="optionBoxB" class="optionBox optionBoxB">
+			<div id="optionLetterText" class="optionLetterText">
+			B
+			</div>
+			<div id="optionBValue" class="optionValue">
+			Option Value
+			</div>
+		</div>
+
+		<div id="optionBoxC" class="optionBox optionBoxC">
+			<div id="optionLetterText" class="optionLetterText">
+			C
+			</div>
+			<div id="optionCValue" class="optionValue">
+			Option Value
+			</div>
+		</div>
+
+		<div id="optionBoxD" class="optionBox optionBoxD">
+			<div id="optionLetterText" class="optionLetterText">
+			D
+			</div>
+			<div id="optionDValue" class="optionValue">
+			Option Value
+			</div>
+		</div>
+	</div>
+</div>
+
+</body>
+
+</html>

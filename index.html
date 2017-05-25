@@ -193,7 +193,7 @@
 				<div id="optionLetterText" class="optionLetterText">
 					A
 				</div>
-				<div id="optionAValue" class="optionValue">
+				<div id="answerOptionA" class="optionValue">
 					Option Value
 				</div>
 			</div>
@@ -202,7 +202,7 @@
 				<div id="optionLetterText" class="optionLetterText">
 					B
 				</div>
-				<div id="optionBValue" class="optionValue">
+				<div id="answerOptionB" class="optionValue">
 					Option Value
 				</div>
 			</div>
@@ -211,7 +211,7 @@
 				<div id="optionLetterText" class="optionLetterText">
 					C
 				</div>
-				<div id="optionCValue" class="optionValue">
+				<div id="answerOptionC" class="optionValue">
 					Option Value
 				</div>
 			</div>
@@ -220,7 +220,7 @@
 				<div id="optionLetterText" class="optionLetterText">
 					D
 				</div>
-				<div id="optionDValue" class="optionValue">
+				<div id="answerOptionD" class="optionValue">
 					Option Value
 				</div>
 			</div>
@@ -229,36 +229,59 @@
 
 	<script type="text/javascript">
 
+	    var TeamID = {
+	    	'One' : 'team1',
+	    	'Two' : 'team2'
+	    };
+
+		function Team(id, name, score) {
+			this.id = id;
+			this.name = name;
+			this.score = score;
+		}
+
 		function Game() {
-			this.team1Name;
-			this.team2Name;
-			this.currentTeamGuessing = 1;
-			this.team1Score = 0;
-			this.team2Score = 0;
-			this.round = 1;
+			var team1 = new Team(TeamID.One, 'My Team 1', 0);
+			var team2 = new Team(TeamID.Two, 'My Team 2', 0);
+			this.teams = [ team1, team2 ];
+			this.currentTeamGuessing = team1; 
+			this.currentRound = 1;
 			this.secondsLeftInRound = 30;
+			this.currentRoundHasEnded = false;
 		}
 
 		Game.prototype.startGame = function() {
-			console.log('starting game. Round: ' + this.round);
-			this.display = new Display(this.onAnswerSelected);
+			console.log('Starting game. Round: ' + this.currentRound + ' Team Guessing: ' + this.currentTeamGuessing.id);
 			this.model = new Model();
-			this.display.displayNewRound(this.round, this.currentTeamGuessing);
+			var self = this;
+			this.display = new Display(function(answerOptionValue) {
+					self.onAnswerSelected(answerOptionValue);
+				});
+			this.display.displayNewRound(this.currentRound, this.currentTeamGuessing);
 			this.setTimer();
 		}
 
-		Game.prototype.onAnswerSelected = function(optionBox) {
-			console.log('option box selected: ' + optionBox);
-			if (optionBox.value === this.model.answers[this.round]) {
-				// TODO : 
-				// model.team1 score ++ 
-				// display.update();
-				// this.display.showViewOnCorrect()
+		Game.prototype.onAnswerSelected = function(answerOptionValue) {
+			if (this.currentRoundHasEnded) {
+				return;
+			}
+			console.log('option box selected: ' + answerOptionValue);
+			var model = new Model();
+			console.log('round', this.currentRound);
+			console.log('team', this.currentTeamGuessing);
+			if (answerOptionValue === model.rounds[this.currentRound].correctAnswer) {
+				this.updateScoreOfCurrentTeamGuessing(this.currentTeamGuessing);
 				alert('Correct!');
 			} else {
 				alert('False!');
 			}
-		}
+			this.currentRoundHasEnded = true;
+		};
+
+		Game.prototype.updateScoreOfCurrentTeamGuessing = function(team) {
+			team.score++;
+			this.display.updateTeamScore(team);
+		};
 
 		Game.prototype.setTimer = function() {
 			var self = this;
@@ -271,7 +294,7 @@
 				self.secondsLeftInRound--;
 
 			}, 1000);
-		}
+		};
 
 		Game.prototype.convertSecondsLeftToDisplayText = function (secondsLeft) {
 			var displayText;
@@ -291,16 +314,37 @@
 			this.onAnswerSelected = onAnswerSelected;
 		}
 
-		Display.prototype.displayNewRound = function(round, currentTeamGuessing)
+		Display.prototype.displayNewRound = function(currentRound, currentTeamGuessing)
 		{
-			this.setOnClickListenerOfElement('optionBoxA', 'A');
-			this.setOnClickListenerOfElement('optionBoxB', 'B');
+			var model = new Model();
+			this.displayConfiguration = model.rounds[currentRound];
+			this.fillCardsWithAnswerOptions();
 		}
 
-		Display.prototype.setOnClickListenerOfElement = function(elementId, name) {
+		Display.prototype.fillCardsWithAnswerOptions = function() {
+			this.setOnClickListenerOfElement('optionBoxA', this.displayConfiguration.answerOptionA);
+			this.setOnClickListenerOfElement('optionBoxB', this.displayConfiguration.answerOptionB);
+			this.setTextOfElement('answerOptionA', this.displayConfiguration.answerOptionA);
+			this.setTextOfElement('answerOptionB', this.displayConfiguration.answerOptionB);
+		};
+
+		Display.prototype.updateTeamScore = function(team) {
+			var score = team.score;
+			if (team.id === TeamID.One) {
+				this.setTextOfElement('team1Score', score);
+			} else {
+				this.setTextOfElement('team2Score', score);
+			}
+		}
+
+		Display.prototype.setTextOfElement = function(elementId, text) {
+			document.getElementById(elementId).innerHTML = text;
+		}
+
+		Display.prototype.setOnClickListenerOfElement = function(elementId, answerOptionValue) {
 			var self = this;
 			document.getElementById(elementId).addEventListener('click', function() {
-				self.onAnswerSelected(name);
+					self.onAnswerSelected(answerOptionValue);
 			});
 		}
 
@@ -314,21 +358,21 @@
 		function DisplayConfigurationRound1() {
 			this.question = 'What song is this?';
 			this.songUrl = '';
-			this.optionAValue = 'Love Story';
-			this.optionBValue = 'Viva La Vida';
-			this.optionCValue = 'You Really Got Me';
-			this.optionDValue = 'All Star';
-			this.correctValue = this.optionAValue;
+			this.answerOptionA = 'Love Story';
+			this.answerOptionB = 'Viva La Vida';
+			this.answerOptionC = 'You Really Got Me';
+			this.answerOptionD = 'All Star';
+			this.correctAnswer= this.answerOptionA;
 		}
 
 		function DisplayConfigurationRound2() {
 			this.question = 'What song is this?';
 			this.songUrl = '';
-			this.optionAValue = 'Hands To Myself';
-			this.optionBValue = 'What Makes You Beautiful';
-			this.optionCValue = 'Kiss Me';
-			this.optionDValue = 'Baby';
-			this.correctValue = this.optionBValue;
+			this.answerOptionA = 'Hands To Myself';
+			this.answerOptionB = 'What Makes You Beautiful';
+			this.answerOptionC = 'Kiss Me';
+			this.answerOptionD = 'Baby';
+			this.correctAnswer = this.answerOptionB;
 		}
 
 		var game = new Game();

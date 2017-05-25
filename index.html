@@ -2,208 +2,339 @@
 
 <html>
 <head>	
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 
-<script type="text/javascript">
+	<style>
+		@font-face {
+			font-family: 'AmazonEmber';
+			src: url('https://images-na.ssl-images-amazon.com/images/G/01/digital/music/player/font/amazonember_lt_base._V275201041_.ttf') 
+		}
 
-</script>
+		@font-face {
+			font-family: 'AmazonEmber';
+			src: url('https://images-na.ssl-images-amazon.com/images/G/01/digital/music/player/font/amazonember_md_base._V275201045_.ttf');
+			font-weight: bold;
+		}
 
-<style>
-@font-face {
-	font-family: 'AmazonEmber';
-	src: url('https://images-na.ssl-images-amazon.com/images/G/01/digital/music/player/font/amazonember_lt_base._V275201041_.ttf') 
-}
+		body {
+			background: -webkit-gradient(linear, left top, left bottom, from(black), to(gray)) fixed;
+			color: white;
+			font-family: 'AmazonEmber', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+			padding: 0;
+			margin: 0;
+		}
+		.container {
+			position: fixed;
+			width: 100%;
+			height:100%;
+			padding: 0;
+			margin: 0;
+		}
 
-@font-face {
-	font-family: 'AmazonEmber';
-	src: url('https://images-na.ssl-images-amazon.com/images/G/01/digital/music/player/font/amazonember_md_base._V275201045_.ttf');
-	font-weight: bold;
-}
+		.timer {
+			position: relative;
+			top: 15px;
+			margin: 0 auto;
+			background-color: rgba(255, 255, 255, .3);
+			border-radius: 15px;
+			height: 30px;
+			width: 80px;
+		}
 
-body {
-	background: -webkit-gradient(linear, left top, left bottom, from(black), to(gray)) fixed;
-	color: white;
-	font-family: 'AmazonEmber', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
-	padding: 0;
-	margin: 0;
-}
-.container {
-	position: fixed;
-	width: 100%;
-	height:100%;
-	padding: 0;
-	margin: 0;
-}
+		.secondsLeftText {
+			position: static;
+			font-size: 20px;
+			text-align: center;
+			vertical-align: center;
+			margin-top: 5px;
+		}
 
-.timer {
-	position: relative;
-	top: 50px;
-	margin: 0 auto;
-	background-color: rgba(255, 255, 255, .3);
-	border-radius: 15px;
-	height: 30px;
-	width: 80px;
-}
+		.teamScoreText {
+			font-size: 20px;
+			top: 50px;
+			text-align: center;
+		}
 
-.teamScoreText {
-	font-size: 20px;
-	top: 50px;
-	text-align: center;
-}
+		.team1Text {
+			color: white;
+			position: absolute; 
+			width: auto;
+			height: auto;
+			left: 50px;
+		}
 
-.team1Text {
-	color: white;
-	position: absolute; 
-	width: auto;
-	height: auto;
-	left: 50px;
-}
+		.team1Score {
+			color: white;
+			position: relative; 
+			top: 15px;
+		}
 
-.team1Score {
-	color: white;
-	position: relative; 
-	top: 15px;
-}
+		.team2Text {
+			color: white;
+			position: absolute; 
+			width: auto;
+			height: auto;
+			right: 50px;
+			text-align: right;
+		}
 
-.team2Text {
-	color: white;
-	position: absolute; 
-	width: auto;
-	height: auto;
-	right: 50px;
-	text-align: right;
-}
+		.team2Score {
+			color: white;
+			position: relative; 
+			top: 15px;
+		}
 
-.team2Score {
-	color: white;
-	position: relative; 
-	top: 15px;
-}
+		.teamSelected {
+			color: #53aef5;
+			text-decoration: underline;
+		}
 
-.teamSelected {
-	color: #53aef5;
-	text-decoration: underline;
-}
+		.scoreSelected {
+			color: #53aef5;
+			text-decoration: none;
+		}
 
-.scoreSelected {
-	color: #53aef5;
-	text-decoration: none;
-}
+		.displayContainer {
+			position: relative;
+			top: 150px;
+			margin: 0 auto;
+			height: auto;
+			width: 400px;
+			text-align: center;
+			font-weight: bold;
+			font-size: 20px;
+		}
 
+		/*https://stackoverflow.com/questions/6865194/fluid-width-with-equally-spaced-divs*/
+		.optionsContainer {
+			position: absolute;
+			bottom: 10px;
+			left: 10px;
+			right: 10px;
+			height: 50%;
+			width: auto;
+		}
 
-/*https://stackoverflow.com/questions/6865194/fluid-width-with-equally-spaced-divs*/
-.optionsContainer {
-	position: absolute;
-	bottom: 10px;
-	left: 10px;
-	right: 10px;
-	height: 50%;
-	width: auto;
-}
+		.optionBox {
+			position: absolute;
+			height: 47.5%;
+			width: 49%;
+			border: 2px solid gray;
+			background-color: rgba(255, 255, 255, .15);;
+		}
 
-.optionBox {
-	position: absolute;
-	height: 47.5%;
-	width: 49%;
-	border: 2px solid gray;
-	background-color: rgba(255, 255, 255, .15);;
-}
+		.optionBoxA {
+			left: 0;
+			top: 0;
+		}
 
-.optionBoxA {
-	left: 0;
-	top: 0;
-}
+		.optionBoxB {
+			right: 0;
+			top: 0;
+		}
 
-.optionBoxB {
-	right: 0;
-	top: 0;
-}
+		.optionBoxC {
+			left: 0;
+			bottom: 0;
+		}
 
-.optionBoxC {
-	left: 0;
-	bottom: 0;
-}
+		.optionBoxD {
+			right: 0;
+			bottom: 0;
+		}
 
-.optionBoxD {
-	right: 0;
-	bottom: 0;
-}
+		.optionLetterText {
+			position: absolute;
+			font-size: 36px;
+			top: 30px;
+			left: 30px;
+		}
 
-.optionLetterText {
-	position: absolute;
-	font-size: 36px;
-	top: 30px;
-	left: 30px;
-}
-
-.optionValue {
-	position: absolute;
-	top: 80px;
-	left: 30px;
-}
-</style>
+		.optionValue {
+			position: absolute;
+			top: 80px;
+			left: 30px;
+		}
+	</style>
 
 </head>
 
 <body>
+	<!-- ALERTS: https://www.w3schools.com/howto/howto_js_alert.asp -->
+	<div id="container" class="container">
 
-<div id="container" class="container">
+		<div id="displayContainer" class="displayContainer">
+			1 of 5
+			<br>
+			What song is this?
+		</div>
 
-	<div id="timer" class="timer">
-	</div>
+		<div id="timer" class="timer">
+			<div id="secondsLeftText" class="secondsLeftText">
+			</div>
+		</div>
 
-	<div id="team1Text" class="teamScoreText team1Text">
-	TEAM 1
-		<div id="team1Score" class="teamScoreText">
-		0
+		<div id="team1Text" class="teamScoreText team1Text">
+			TEAM 1
+			<div id="team1Score" class="teamScoreText">
+				0
+			</div>
+		</div>
+
+		<div id="team2Text" class="teamScoreText team2Text teamSelected">
+			TEAM 2
+			<div id="team2Score" class="teamScoreText scoreSelected">
+				0
+			</div>
+		</div>
+
+		<div id="optionsContainer" class="optionsContainer">
+			<div id="optionBoxA" class="optionBox optionBoxA">
+				<div id="optionLetterText" class="optionLetterText">
+					A
+				</div>
+				<div id="optionAValue" class="optionValue">
+					Option Value
+				</div>
+			</div>
+
+			<div id="optionBoxB" class="optionBox optionBoxB">
+				<div id="optionLetterText" class="optionLetterText">
+					B
+				</div>
+				<div id="optionBValue" class="optionValue">
+					Option Value
+				</div>
+			</div>
+
+			<div id="optionBoxC" class="optionBox optionBoxC">
+				<div id="optionLetterText" class="optionLetterText">
+					C
+				</div>
+				<div id="optionCValue" class="optionValue">
+					Option Value
+				</div>
+			</div>
+
+			<div id="optionBoxD" class="optionBox optionBoxD">
+				<div id="optionLetterText" class="optionLetterText">
+					D
+				</div>
+				<div id="optionDValue" class="optionValue">
+					Option Value
+				</div>
+			</div>
 		</div>
 	</div>
 
-	<div id="team2Text" class="teamScoreText team2Text teamSelected">
-	TEAM 2
-		<div id="team2Score" class="teamScoreText scoreSelected">
-		0
-		</div>
-	</div>
+	<script type="text/javascript">
 
-	<div id="optionsContainer" class="optionsContainer">
-		<div id="optionBoxA" class="optionBox optionBoxA">
-			<div id="optionLetterText" class="optionLetterText">
-			A
-			</div>
-			<div id="optionAValue" class="optionValue">
-			Option Value
-			</div>
-		</div>
+		function Game() {
+			this.team1Name;
+			this.team2Name;
+			this.currentTeamGuessing = 1;
+			this.team1Score = 0;
+			this.team2Score = 0;
+			this.round = 1;
+			this.secondsLeftInRound = 30;
+		}
 
-		<div id="optionBoxB" class="optionBox optionBoxB">
-			<div id="optionLetterText" class="optionLetterText">
-			B
-			</div>
-			<div id="optionBValue" class="optionValue">
-			Option Value
-			</div>
-		</div>
+		Game.prototype.startGame = function() {
+			console.log('starting game. Round: ' + this.round);
+			this.display = new Display(this.onAnswerSelected);
+			this.model = new Model();
+			this.display.displayNewRound(this.round, this.currentTeamGuessing);
+			this.setTimer();
+		}
 
-		<div id="optionBoxC" class="optionBox optionBoxC">
-			<div id="optionLetterText" class="optionLetterText">
-			C
-			</div>
-			<div id="optionCValue" class="optionValue">
-			Option Value
-			</div>
-		</div>
+		Game.prototype.onAnswerSelected = function(optionBox) {
+			console.log('option box selected: ' + optionBox);
+			if (optionBox.value === this.model.answers[this.round]) {
+				// TODO : 
+				// model.team1 score ++ 
+				// display.update();
+				// this.display.showViewOnCorrect()
+				alert('Correct!');
+			} else {
+				alert('False!');
+			}
+		}
 
-		<div id="optionBoxD" class="optionBox optionBoxD">
-			<div id="optionLetterText" class="optionLetterText">
-			D
-			</div>
-			<div id="optionDValue" class="optionValue">
-			Option Value
-			</div>
-		</div>
-	</div>
-</div>
+		Game.prototype.setTimer = function() {
+			var self = this;
+
+			var intervalId = setInterval(function() {
+				if (self.secondsLeft === 0) {
+					self.onTimerEnded(intervalId);
+				}
+				document.getElementById('secondsLeftText').innerHTML = self.convertSecondsLeftToDisplayText(self.secondsLeftInRound);
+				self.secondsLeftInRound--;
+
+			}, 1000);
+		}
+
+		Game.prototype.convertSecondsLeftToDisplayText = function (secondsLeft) {
+			var displayText;
+			if (secondsLeft < 10) {
+				return '00:0' + secondsLeft;
+			} 
+			return '00:' + secondsLeft;
+		}
+
+		Game.prototype.onTimerEnded = function(intervalId) {
+			document.getElementById('secondsLeftText').innerHTML = '00:00';
+			clearInterval(intervalId);
+			alert('Time\'s up!');
+		}
+
+		function Display(onAnswerSelected) {
+			this.onAnswerSelected = onAnswerSelected;
+		}
+
+		Display.prototype.displayNewRound = function(round, currentTeamGuessing)
+		{
+			this.setOnClickListenerOfElement('optionBoxA', 'A');
+			this.setOnClickListenerOfElement('optionBoxB', 'B');
+		}
+
+		Display.prototype.setOnClickListenerOfElement = function(elementId, name) {
+			var self = this;
+			document.getElementById(elementId).addEventListener('click', function() {
+				self.onAnswerSelected(name);
+			});
+		}
+
+		function Model() {
+			var round1 = new DisplayConfigurationRound1();
+			var round2 = new DisplayConfigurationRound2();
+
+			this.rounds = [ round1, round2 ];
+		}
+
+		function DisplayConfigurationRound1() {
+			this.question = 'What song is this?';
+			this.songUrl = '';
+			this.optionAValue = 'Love Story';
+			this.optionBValue = 'Viva La Vida';
+			this.optionCValue = 'You Really Got Me';
+			this.optionDValue = 'All Star';
+			this.correctValue = this.optionAValue;
+		}
+
+		function DisplayConfigurationRound2() {
+			this.question = 'What song is this?';
+			this.songUrl = '';
+			this.optionAValue = 'Hands To Myself';
+			this.optionBValue = 'What Makes You Beautiful';
+			this.optionCValue = 'Kiss Me';
+			this.optionDValue = 'Baby';
+			this.correctValue = this.optionBValue;
+		}
+
+		var game = new Game();
+		game.startGame();
+
+	</script>
 
 </body>
 

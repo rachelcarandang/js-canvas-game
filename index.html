@@ -33,25 +33,24 @@
 
 		.timer {
 			position: relative;
-			top: 15px;
+			top: 55px;
 			margin: 0 auto;
 			background-color: rgba(255, 255, 255, .3);
 			border-radius: 15px;
-			height: 30px;
-			width: 80px;
-			padding-top: 1px;
+			height: 20px;
+			width: 60px;
+			padding: 0;
+			line-height:20px;
+			vertical-align: middle;
 		}
 
 		.secondsLeftText {
-			position: static;
-			font-size: 20px;
+			font-size: 14px;
 			text-align: center;
-			vertical-align: center;
-			margin-top: 2px;
 		}
 
 		.teamScoreText {
-			font-size: 20px;
+			font-size: 16px;
 			text-align: center;
 		}
 
@@ -97,8 +96,8 @@
 		}
 
 		.displayContainer {
-			position: relative;
-			top: 150px;
+			position: fixed;
+			top: 100px;
 			margin: 0 auto;
 			height: auto;
 			width: 400px;
@@ -113,7 +112,7 @@
 
 		.question {
 			font-weight: bold;
-			font-size: 20px;
+			font-size: 16px;
 		}
 
 		/*https://stackoverflow.com/questions/6865194/fluid-width-with-equally-spaced-divs*/
@@ -129,7 +128,7 @@
 		.optionBox {
 			position: absolute;
 			height: 47.5%;
-			width: 49%;
+			width: 48%;
 			border: 2px solid gray;
 			background-color: rgba(255, 255, 255, .15);;
 		}
@@ -166,13 +165,77 @@
 			top: 80px;
 			left: 30px;
 		}
+
+		/* modal */
+		/* The Modal (background) */
+		.modal {
+		    display: none; /* Hidden by default */
+		    position: fixed; /* Stay in place */
+		    z-index: 1; /* Sit on top */
+		    left: 0;
+		    top: 0;
+		    width: 100%; /* Full width */
+		    height: 100%; /* Full height */
+		    overflow: auto; /* Enable scroll if needed *//*
+		    background-color: rgb(0,0,0); /* Fallback color */
+		    /*background-color: rgba(0,0,0,0.5); /* Black w/ opacity */*/
+		}
+
+		/* Modal Content/Box  */
+		.answerFeedbackModal {
+		    background-color: black;
+		    color: white;
+		    font-size: 14px;
+		    height: 150px;
+		    width: 150px;		    
+		    padding: 20px;
+		    border-radius: 15px;
+			position: absolute;
+	    	left: 50%;
+		    top: 37%;
+		    -moz-transform: translate(-50%, -37%);
+		    -webkit-transform: translate(-50%, -37%);
+		    -o-transform: translate(-50%, -37%);
+		    transform: translate(-50%, -37%);
+		    text-align: center;
+		}
+
+		.answerFeedbackModalImage {
+			position: absolute;
+			width: 70px;
+			height: 70px;
+			left: 50%;
+			top: 30%;
+		    transform: translate(-50%, -30%);
+		}
+
+		.answerFeedbackText {
+			position: relative;
+			margin-top: 100px;
+		}
+
+
 	</style>
+
 
 </head>
 
 <body>
 	<!-- ALERTS: https://www.w3schools.com/howto/howto_js_alert.asp -->
 	<div id="container" class="container">
+
+		<div id="myModal" class="modal">
+
+		  <!-- Modal content -->
+		  <div class="answerFeedbackModal">
+		    <img id="answerFeedbackModalImage" class="answerFeedbackModalImage"
+		   	 src="assets/thumbs_up.png">
+		   	 <div id="answerFeedbackText" class="answerFeedbackText">
+		   	 Correct!
+		   	 </div>
+		  </div>
+
+		</div>
 
 		<!-- Central container with round number, question and graphic -->
 		<div id="displayContainer" class="displayContainer">
@@ -302,14 +365,26 @@
 			console.log('team', this.currentTeamGuessing);
 			if (answerOptionValue === model.rounds[this.currentRound-1].correctAnswer) {
 				this.updateScoreOfCurrentTeamGuessing(this.currentTeamGuessing);
-				alert('Correct!');
+				// alert('Correct!');
 			} else {
-				alert('False!');
+				// alert('False!');
 			}
+			var modal = document.getElementById('myModal');
+			modal.style.display = "block";
+			// setTimeout(function() {
+		 //        $("#myModal").fadeOut(3000);
+			// }, 3000);
 			this.currentRoundHasEnded = true;
 			this.handleEndOfRound();
 		};
 
+		window.onclick = function(event) {
+			var modal = document.getElementById('myModal');
+		    if (event.target == modal) {
+		        modal.style.display = "none";
+		        // $("#myModal").fadeOut(3000);
+		    }
+		}
 		Game.prototype.handleEndOfRound = function() {
 			if (this.currentRound === this.totalRounds ) {
 				alert('Game has ended.');

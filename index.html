@@ -125,12 +125,21 @@
 			width: auto;
 		}
 
+		.optionBox:hover {
+			background-color: rgba(0, 0, 0, .15) ;
+		}
+
+		.optionBox:active {
+			background-color: rgba(0, 0, 0, .5);
+			color: #53aef5;
+		}
+
 		.optionBox {
 			position: absolute;
 			height: 47.5%;
 			width: 48%;
 			border: 2px solid gray;
-			background-color: rgba(255, 255, 255, .15);;
+			background-color: rgba(255, 255, 255, .15);
 		}
 
 		.optionBoxA {
@@ -212,6 +221,16 @@
 		.answerFeedbackText {
 			position: relative;
 			margin-top: 100px;
+		}
+
+		.correctAnswerStyle {
+			border-color: green ;
+			border-width: 2px;
+		}
+
+		.wrongAnswerStyle {
+			border-color: red;
+			border-width: 2px;
 		}
 
 
@@ -365,17 +384,23 @@
 			console.log('team', this.currentTeamGuessing);
 			if (answerOptionValue === model.rounds[this.currentRound-1].correctAnswer) {
 				this.updateScoreOfCurrentTeamGuessing(this.currentTeamGuessing);
+
 				// alert('Correct!');
 			} else {
 				// alert('False!');
 			}
 			var modal = document.getElementById('myModal');
 			modal.style.display = "block";
-			// setTimeout(function() {
-		 //        $("#myModal").fadeOut(3000);
-			// }, 3000);
-			this.currentRoundHasEnded = true;
-			this.handleEndOfRound();
+			setTimeout(function() {
+		        $("#myModal").fadeOut(3000);
+
+			}, 500);
+
+			var self = this;
+			setTimeout(function() {
+				self.currentRoundHasEnded = true;
+				self.handleEndOfRound();
+			}, 3500);
 		};
 
 		window.onclick = function(event) {

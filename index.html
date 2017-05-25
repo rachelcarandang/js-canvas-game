@@ -174,16 +174,16 @@
 			</div>
 		</div>
 
-		<div id="team1Text" class="teamScoreText team1Text">
+		<div id="team1Name" class="teamScoreText team1Text">
 			TEAM 1
 			<div id="team1Score" class="teamScoreText">
 				0
 			</div>
 		</div>
 
-		<div id="team2Text" class="teamScoreText team2Text teamSelected">
+		<div id="team2Name" class="teamScoreText team2Text">
 			TEAM 2
-			<div id="team2Score" class="teamScoreText scoreSelected">
+			<div id="team2Score" class="teamScoreText">
 				0
 			</div>
 		</div>
@@ -234,18 +234,21 @@
 	    	'Two' : 'team2'
 	    };
 
-		function Team(id, name, score) {
+		function Team(id, name, score, divIdOfTeamName, divIdOfScore) {
 			this.id = id;
 			this.name = name;
 			this.score = score;
+			this.divIdOfTeamName = divIdOfTeamName;
+			this.divIdOfScore = divIdOfScore;
 		}
 
 		function Game() {
-			var team1 = new Team(TeamID.One, 'My Team 1', 0);
-			var team2 = new Team(TeamID.Two, 'My Team 2', 0);
+			var team1 = new Team(TeamID.One, 'My Team 1', 0, 'team1Name', 'team1Score');
+			var team2 = new Team(TeamID.Two, 'My Team 2', 0, 'team2Name', 'team2Score');
 			this.teams = [ team1, team2 ];
 			this.currentTeamGuessing = team1; 
 			this.currentRound = 1;
+			this.totalRounds = 2;
 			this.secondsLeftInRound = 30;
 			this.currentRoundHasEnded = false;
 		}
@@ -318,7 +321,13 @@
 		{
 			var model = new Model();
 			this.displayConfiguration = model.rounds[currentRound];
+			this.highlightTeamThatIsGuessing(currentTeamGuessing);
 			this.fillCardsWithAnswerOptions();
+		}
+
+		Display.prototype.highlightTeamThatIsGuessing = function(currentTeamGuessing) {
+			var teamName = currentTeamGuessing.divIdOfTeamName;
+			document.getElementById(teamName).classList.add('teamSelected');
 		}
 
 		Display.prototype.fillCardsWithAnswerOptions = function() {
@@ -329,12 +338,7 @@
 		};
 
 		Display.prototype.updateTeamScore = function(team) {
-			var score = team.score;
-			if (team.id === TeamID.One) {
-				this.setTextOfElement('team1Score', score);
-			} else {
-				this.setTextOfElement('team2Score', score);
-			}
+			this.setTextOfElement(team.divIdOfScore, team.score);
 		}
 
 		Display.prototype.setTextOfElement = function(elementId, text) {

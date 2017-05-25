@@ -224,15 +224,18 @@
 		}
 
 		.correctAnswerStyle {
-			border-color: green ;
+			border-color: #b3eb87;
 			border-width: 2px;
 		}
 
 		.wrongAnswerStyle {
-			border-color: red;
+			border-color: #ee3740;
 			border-width: 2px;
 		}
 
+		.timesUpSecondStyle {
+			color: #ee3740;
+		}
 
 	</style>
 
@@ -330,6 +333,12 @@
 
 	<script type="text/javascript">
 
+		var AnswerFeedback = {
+			'Correct' : 'correct',
+			'Incorrect' : 'incorrect',
+			'TimesUp' : 'timesUp'
+		}
+
 	    var TeamID = {
 	    	'One' : 'team1',
 	    	'Two' : 'team2'
@@ -348,6 +357,7 @@
 			var team2 = new Team(TeamID.Two, 'My Team 2', 0, 'team2Name', 'team2Score');
 			this.teams = [ team1, team2 ];
 			this.totalRounds = 2;
+			this.secondsPerRound = 2;
 			this.currentRound;
 			this.currentTeamGuessing;
 			this.secondsLeftInRound;
@@ -363,7 +373,7 @@
 			console.log('Starting game.');
 			this.currentRound = 1;
 			this.currentTeamGuessing = this.calculateCurrentTeamGuessingBasedOnRoundsAndNumberOfTeams();
-			this.secondsLeftInRound = 30;
+			this.secondsLeftInRound = this.secondsPerRound;
 			this.currentRoundHasEnded = false;
 			this.model = new Model();
 			var self = this;
@@ -384,32 +394,19 @@
 			console.log('team', this.currentTeamGuessing);
 			if (answerOptionValue === model.rounds[this.currentRound-1].correctAnswer) {
 				this.updateScoreOfCurrentTeamGuessing(this.currentTeamGuessing);
-
+				this.display.showAnswerFeedbackModal(AnswerFeedback.Correct);
 				// alert('Correct!');
 			} else {
 				// alert('False!');
+				this.display.showAnswerFeedbackModal(AnswerFeedback.Incorrect);
 			}
-			var modal = document.getElementById('myModal');
-			modal.style.display = "block";
-			setTimeout(function() {
-		        $("#myModal").fadeOut(3000);
-
-			}, 500);
-
+			self.currentRoundHasEnded = true;
 			var self = this;
 			setTimeout(function() {
-				self.currentRoundHasEnded = true;
 				self.handleEndOfRound();
 			}, 3500);
 		};
 
-		window.onclick = function(event) {
-			var modal = document.getElementById('myModal');
-		    if (event.target == modal) {
-		        modal.style.display = "none";
-		        // $("#myModal").fadeOut(3000);
-		    }
-		}
 		Game.prototype.handleEndOfRound = function() {
 			if (this.currentRound === this.totalRounds ) {
 				alert('Game has ended.');
@@ -420,12 +417,14 @@
 		};
 
 		Game.prototype.startANewRound = function() {
+			console.log('startANewRound');
 			var lastTeamGuessing = this.currentTeamGuessing;
 			this.currentRound++;
 			this.currentTeamGuessing = this.calculateCurrentTeamGuessingBasedOnRoundsAndNumberOfTeams();
-			this.secondsLeftInRound = 30;
+			this.secondsLeftInRound = this.secondsPerRound;
 			this.currentRoundHasEnded = false;
 			this.display.displayNewRound(this.currentRound, this.totalRounds, this.currentTeamGuessing, lastTeamGuessing);
+			this.setTimer();
 			this.currentRoundHasEnded = false;
 		};
 
@@ -438,7 +437,7 @@
 			var self = this;
 
 			var intervalId = setInterval(function() {
-				if (self.secondsLeft === 0) {
+				if (self.secondsLeftInRound === 0) {
 					self.onTimerEnded(intervalId);
 				}
 				document.getElementById('secondsLeftText').innerHTML = self.convertSecondsLeftToDisplayText(self.secondsLeftInRound);
@@ -457,14 +456,60 @@
 
 		Game.prototype.onTimerEnded = function(intervalId) {
 			document.getElementById('secondsLeftText').innerHTML = '00:00';
+			document.getElementById('secondsLeftText').classList.add('timesUpSecondStyle');
 			clearInterval(intervalId);
-			alert('Time\'s up!');
+			var self = this;
+			// Prevents you from clicking
+			self.currentRoundHasEnded = true;
+			setTimeout(function() {
+				self.display.showAnswerFeedbackModal(AnswerFeedback.TimesUp);
+			}, 1000);
+
+			setTimeout(function() {
+				self.handleEndOfRound();
+			}, 4000);
 		};
 
 		function Display(teams, onAnswerSelected) {
 			this.onAnswerSelected = onAnswerSelected;
 			this.setUpStaticDisplayElements(teams);
 		};
+
+		Display.prototype.showAnswerFeedbackModal = function(answerFeedback) {
+
+			var modal = document.getElementById('myModal');
+
+			var answerFeedbackText = document.getElementById('answerFeedbackText');
+			var answerFeedbackModalImage = document.getElementById('answerFeedbackModalImage');
+			var imageSrc = 'assets/';
+			var textToDisplay;
+			if (answerFeedback === AnswerFeedback.Correct) {
+				textToDisplay = 'Correct!';
+				imageSrc += 'thumbs_up.png' 
+			} else if (answerFeedback === AnswerFeedback.Incorrect) {
+				textToDisplay = 'Incorrect!';
+				imageSrc += 'thumbs_down.png';
+			} else {
+				textToDisplay = 'Time\'s Up!';
+				imageSrc += 'timer.png';
+			}
+			answerFeedbackText.innerHTML = textToDisplay;
+			answerFeedbackModalImage.src = imageSrc;
+			modal.style.display = "block";
+
+			setTimeout(function() {
+		        $("#myModal").fadeOut(3000);
+			}, 500);
+		}
+
+		// Modal can be exited by clicking
+		window.onclick = function(event) {
+			var modal = document.getElementById('myModal');
+		    if (event.target == modal) {
+		        modal.style.display = "none";
+		        // $("#myModal").fadeOut(3000);
+		    }
+		}
 
 		Display.prototype.setUpStaticDisplayElements = function(teams) {
 			var team1 = teams[0];
@@ -475,12 +520,14 @@
 
 		Display.prototype.displayNewRound = function(currentRound, totalRounds, currentTeamGuessing, lastTeamGuessing)
 		{
+			console.log('displayNewRound');
 			var model = new Model();
 			this.displayConfiguration = model.rounds[currentRound-1];
 			this.displayRoundInformation(currentRound, totalRounds);
 			this.highlightTeamThatIsGuessing(currentTeamGuessing);
 			this.undoHighlightOfLastTeamThatIsGuessing(lastTeamGuessing);
 			this.fillCardsWithAnswerOptions();
+			document.getElementById('secondsLeftText').classList.remove('timesUpSecondStyle');
 		};
 
 		Display.prototype.displayRoundInformation = function(currentRound, totalRounds) {

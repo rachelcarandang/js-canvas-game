@@ -16,12 +16,16 @@
 			font-weight: bold;
 		}
 
-		body {
-			background: -webkit-gradient(linear, left top, left bottom, from(black), to(gray)) fixed;
+		body, html {
+			height: 100%;
+			width: 100%;
+			background-position: center center;
+		    background: radial-gradient(#222B3B, black);
 			color: white;
 			font-family: 'AmazonEmber', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
 			padding: 0;
 			margin: 0;
+
 		}
 
 		.contentContainer {
@@ -97,11 +101,11 @@
 		}
 
 		.startGameButton:hover {
-			background-color: rgba(0, 0, 0, .1) ;
+			background-color: rgba(60, 173, 244, .8) ;
 		}
 
 		.startGameButton:active {
-			background-color: rgba(0, 0, 0, .5);
+			background-color: rgba(60, 173, 244, .6) ;
 		}
 	</style>
 	</head>

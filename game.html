@@ -16,8 +16,11 @@
 			font-weight: bold;
 		}
 
-		body {
-			background: -webkit-gradient(linear, left top, left bottom, from(black), to(gray)) fixed;
+		body, html {
+			height: 100%;
+			width: 100%;
+			background-position: center center;
+		    background: radial-gradient(#222B3B, black);
 			color: white;
 			font-family: 'AmazonEmber', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
 			padding: 0;
@@ -126,20 +129,22 @@
 		}
 
 		.optionBox:hover {
-			background-color: rgba(0, 0, 0, .15) ;
+			background: rgba(0, 0, 0, .9) ;
 		}
 
 		.optionBox:active {
-			background-color: rgba(0, 0, 0, .5);
+			background-color: rgba(0, 0, 0);
 			color: #53aef5;
 		}
 
 		.optionBox {
 			position: absolute;
+			background: radial-gradient(#2b3037, #2a2f35);
+			background-position: center center;
 			height: 47.5%;
 			width: 48%;
-			border: 2px solid gray;
-			background-color: rgba(255, 255, 255, .15);
+			/*border: 2px solid gray;*/
+			/*background-color: rgba(255, 255, 255, .15);*/
 		}
 
 		.optionBoxA {
@@ -237,6 +242,49 @@
 			color: #ee3740;
 		}
 
+		.endGameModal {
+		    display: none; /* Hidden by default */
+		    position: fixed; /* Stay in place */
+		    z-index: 1; /* Sit on top */
+		    left: 0;
+		    top: 0;
+		    width: 100%; /* Full width */
+		    height: 100%; /* Full height */
+		    overflow: auto; /* Enable scroll if needed */
+		    background-color: rgb(0,0,0); /* Fallback color */
+		    background-color: rgba(0,0,0,.7); /* Black w/ opacity */
+		    text-align: center;
+		}
+
+		.endGameModalContainer {
+			position: absolute;
+			text-align: center;
+			width: auto;
+			height: auto;
+			left: 50%;
+			top: 30%;
+		    transform: translate(-50%, -30%);
+		}
+
+		.endGameModalImage {
+			position: static;
+			width: 250px;
+			height: auto;
+		}
+
+		.endGameText {
+			position: static;
+			margin-top: 32px;
+			font-weight: bold;
+			font-size: 16px;
+		}
+
+		.endGameWinner {
+			margin-top: 16px;
+			font-weight:bold;
+			font-size: 36px;
+			margin-bottom: 24px;
+		}
 	</style>
 
 	<script type="text/javascript">
@@ -272,6 +320,18 @@
 		   	 </div>
 		  </div>
 
+		</div>
+
+		<div id="endGameModal" class="endGameModal">
+		 	<div id="endGameModalContainer" class="endGameModalContainer">
+				<img id="endGameModalImage" class="endGameModalImage"
+			   	 src="assets/trophy.png">
+			   	 <div id="endGameText" class="endGameText">
+			   	 And the winner is...
+			   	 </div>
+			   	 <div id="endGameWinner" class="endGameWinner">
+			   	 </div>
+		   	 </div>
 		</div>
 
 		<!-- Central container with round number, question and graphic -->
@@ -374,12 +434,13 @@
 			var team1 = new Team(TeamID.One, team1Name, 0, 'team1Name', 'team1Score');
 			var team2 = new Team(TeamID.Two, team2Name, 0, 'team2Name', 'team2Score');
 			this.teams = [ team1, team2 ];
-			this.totalRounds = 2;
+			this.totalRounds = 4;
 			this.secondsPerRound = 2;
 			this.currentRound;
 			this.currentTeamGuessing;
 			this.secondsLeftInRound;
 			this.currentRoundHasEnded;
+			this.shouldStopTimer;
 		};
 
 		Game.prototype.calculateCurrentTeamGuessingBasedOnRoundsAndNumberOfTeams = function() {
@@ -393,6 +454,7 @@
 			this.currentTeamGuessing = this.calculateCurrentTeamGuessingBasedOnRoundsAndNumberOfTeams();
 			this.secondsLeftInRound = this.secondsPerRound;
 			this.currentRoundHasEnded = false;
+			this.shouldStopTimer = false;
 			this.model = new Model();
 			var self = this;
 			this.display = new Display(this.teams, function(answerOptionValue) {
@@ -403,6 +465,7 @@
 		};
 
 		Game.prototype.onAnswerSelected = function(answerOptionValue) {
+			this.shouldStopTimer = true;
 			if (this.currentRoundHasEnded) {
 				return;
 			}
@@ -413,13 +476,11 @@
 			if (answerOptionValue === model.rounds[this.currentRound-1].correctAnswer) {
 				this.updateScoreOfCurrentTeamGuessing(this.currentTeamGuessing);
 				this.display.showAnswerFeedbackModal(AnswerFeedback.Correct);
-				// alert('Correct!');
 			} else {
-				// alert('False!');
 				this.display.showAnswerFeedbackModal(AnswerFeedback.Incorrect);
 			}
-			self.currentRoundHasEnded = true;
 			var self = this;
+			self.currentRoundHasEnded = true;
 			setTimeout(function() {
 				self.handleEndOfRound();
 			}, 3500);
@@ -427,7 +488,17 @@
 
 		Game.prototype.handleEndOfRound = function() {
 			if (this.currentRound === this.totalRounds ) {
-				alert('Game has ended.');
+				var winnintTeam;
+				var team1 = this.teams[0];
+				var team2 = this.teams[1];
+				if (team1.score > team2.score) {
+					winningTeam = team1;
+				} else if (team2.score > team1.score) {
+					winningTeam = team2;
+				} else {
+					winningTeam = null;
+				}
+				this.display.showEndGameModal(winningTeam);
 				return;
 			} else {
 				this.startANewRound();
@@ -444,6 +515,7 @@
 			this.display.displayNewRound(this.currentRound, this.totalRounds, this.currentTeamGuessing, lastTeamGuessing);
 			this.setTimer();
 			this.currentRoundHasEnded = false;
+			this.shouldStopTimer = false;
 		};
 
 		Game.prototype.updateScoreOfCurrentTeamGuessing = function(team) {
@@ -457,11 +529,18 @@
 			var intervalId = setInterval(function() {
 				if (self.secondsLeftInRound === 0) {
 					self.onTimerEnded(intervalId);
+				} 
+				if (self.shouldStopTimer) {
+					self.stopTimer(intervalId);
 				}
 				document.getElementById('secondsLeftText').innerHTML = self.convertSecondsLeftToDisplayText(self.secondsLeftInRound);
 				self.secondsLeftInRound--;
 
 			}, 1000);
+		};
+
+		Game.prototype.stopTimer = function(intervalId) {
+			clearInterval(intervalId);
 		};
 
 		Game.prototype.convertSecondsLeftToDisplayText = function (secondsLeft) {
@@ -517,6 +596,27 @@
 			setTimeout(function() {
 		        $("#myModal").fadeOut(3000);
 			}, 500);
+		}
+
+		Display.prototype.showEndGameModal = function(winningTeam) {
+			var modal = document.getElementById('endGameModal');
+			var winner = document.getElementById('endGameWinner');
+			if (winningTeam != null) {
+				winner.innerHTML = winningTeam.name;
+			} else {
+				document.getElementById('endGameText').classList.add('hidden');
+				winner.innerHTML = 'It\'s a Tie!';
+			}
+			modal.style.display = "block";
+		};
+
+				// Modal can be exited by clicking
+		window.onclick = function(event) {
+			var modal = document.getElementById('endGameModal');
+		    if (event.target == modal) {
+		        modal.style.display = "none";
+		        // $("#myModal").fadeOut(3000);
+		    }
 		}
 
 		// Modal can be exited by clicking
@@ -595,7 +695,8 @@
 		function Model() {
 			var round1 = new DisplayConfigurationRound1();
 			var round2 = new DisplayConfigurationRound2();
-			this.rounds = [ round1, round2 ];
+			this.rounds = [ round1, round2, new DisplayConfigurationRound3(),
+			new DisplayConfigurationRound4()];
 		};
 
 		function DisplayConfigurationRound1() {
@@ -609,6 +710,26 @@
 		};
 
 		function DisplayConfigurationRound2() {
+			this.question = 'What song is this?';
+			this.songUrl = '';
+			this.answerOptionA = 'Hands To Myself';
+			this.answerOptionB = 'What Makes You Beautiful';
+			this.answerOptionC = 'Kiss Me';
+			this.answerOptionD = 'Baby';
+			this.correctAnswer = this.answerOptionB;
+		};
+
+		function DisplayConfigurationRound3() {
+			this.question = 'What song is this?';
+			this.songUrl = '';
+			this.answerOptionA = 'Love Story';
+			this.answerOptionB = 'Viva La Vida';
+			this.answerOptionC = 'You Really Got Me';
+			this.answerOptionD = 'All Star';
+			this.correctAnswer= this.answerOptionA;
+		};
+
+		function DisplayConfigurationRound4() {
 			this.question = 'What song is this?';
 			this.songUrl = '';
 			this.answerOptionA = 'Hands To Myself';

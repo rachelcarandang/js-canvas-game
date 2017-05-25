@@ -474,8 +474,6 @@
 			}
 			console.log('option box selected: ' + answerOptionValue);
 			var model = new Model();
-			console.log('round', this.currentRound);
-			console.log('team', this.currentTeamGuessing);
 			if (answerOptionValue === model.rounds[this.currentRound-1].correctAnswer) {
 				this.updateScoreOfCurrentTeamGuessing(this.currentTeamGuessing);
 				this.display.showAnswerFeedbackModal(AnswerFeedback.Correct);
@@ -490,6 +488,7 @@
 		};
 
 		Game.prototype.handleEndOfRound = function() {
+			this.display.stopMusic();
 			if (this.currentRound === this.totalRounds ) {
 				var winnintTeam;
 				var team1 = this.teams[0];
@@ -638,9 +637,15 @@
 			this.setTextOfElement(team2.divIdOfTeamName, team2.name);
 		}
 
+		Display.prototype.stopMusic = function() {
+			this.audio.pause();
+		}
+
 		Display.prototype.displayNewRound = function(currentRound, totalRounds, currentTeamGuessing, lastTeamGuessing)
 		{
 			console.log('displayNewRound');
+			this.audio = new Audio('https://www.amazon.com/gp/dmusic/get_sample_url.html?DownloadLocation=WEBSITE&ASIN=B006WWU924');
+			this.audio.play();
 			var model = new Model();
 			this.displayConfiguration = model.rounds[currentRound-1];
 			this.displayRoundInformation(currentRound, totalRounds);

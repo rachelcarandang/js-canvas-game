@@ -35,16 +35,16 @@
 		}
 
 		.timer {
-			position: relative;
-			top: 55px;
+			position: static;
 			margin: 0 auto;
 			background-color: rgba(255, 255, 255, .3);
 			border-radius: 15px;
-			height: 20px;
+			height: 26px;
 			width: 60px;
 			padding: 0;
-			line-height:20px;
+			line-height:26px;
 			vertical-align: middle;
+			margin-bottom: 24px;
 		}
 
 		.secondsLeftText {
@@ -99,8 +99,10 @@
 		}
 
 		.displayContainer {
-			position: fixed;
-			top: 100px;
+			position: absolute;
+			top: 65px;
+			left: 50%;
+			transform: translate(-50%, 0px);
 			margin: 0 auto;
 			height: auto;
 			width: 400px;
@@ -336,16 +338,17 @@
 
 		<!-- Central container with round number, question and graphic -->
 		<div id="displayContainer" class="displayContainer">
+				<!-- Timer -->
+			<div id="timer" class="timer">
+				<div id="secondsLeftText" class="secondsLeftText">
+				</div>
+			</div>
 			<div id="roundInformation" class="roundInformation"></div>
 			<div id="question" class="question">What song is this?</div>
 			<div id="questionImage" class="questionImage"></div>
 		</div>
 
-		<!-- Timer -->
-		<div id="timer" class="timer">
-			<div id="secondsLeftText" class="secondsLeftText">
-			</div>
-		</div>
+
 
 		<!-- Team Name and Scoring-->
 		<div id="team1Container" class="team1Container">
@@ -435,7 +438,7 @@
 			var team2 = new Team(TeamID.Two, team2Name, 0, 'team2Name', 'team2Score');
 			this.teams = [ team1, team2 ];
 			this.totalRounds = 4;
-			this.secondsPerRound = 2;
+			this.secondsPerRound = 10;
 			this.currentRound;
 			this.currentTeamGuessing;
 			this.secondsLeftInRound;

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+
+<html>
+<head>	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+
+	<style>
+		@font-face {
+			font-family: 'AmazonEmber';
+			src: url('https://images-na.ssl-images-amazon.com/images/G/01/digital/music/player/font/amazonember_lt_base._V275201041_.ttf') 
+		}
+
+		@font-face {
+			font-family: 'AmazonEmber';
+			src: url('https://images-na.ssl-images-amazon.com/images/G/01/digital/music/player/font/amazonember_md_base._V275201045_.ttf');
+			font-weight: bold;
+		}
+
+		body {
+			background: -webkit-gradient(linear, left top, left bottom, from(black), to(gray)) fixed;
+			color: white;
+			font-family: 'AmazonEmber', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+			padding: 0;
+			margin: 0;
+		}
+		.container {
+			position: fixed;
+			width: 100%;
+			height:100%;
+			padding: 0;
+			margin: 0;
+		}
+
+		.timer {
+			position: relative;
+			top: 55px;
+			margin: 0 auto;
+			background-color: rgba(255, 255, 255, .3);
+			border-radius: 15px;
+			height: 20px;
+			width: 60px;
+			padding: 0;
+			line-height:20px;
+			vertical-align: middle;
+		}
+
+		.secondsLeftText {
+			font-size: 14px;
+			text-align: center;
+		}
+
+		.teamScoreText {
+			font-size: 16px;
+			text-align: center;
+		}
+
+		.team1Container {
+			position: absolute; 
+			top: 50px;
+			left: 50px;
+			width: auto;
+			height: auto;
+			vertical-align: center;
+		}
+
+		.team2Container {
+			position: absolute; 
+			top: 50px;
+			right: 50px;
+			width: auto;
+			height: auto;
+			vertical-align: center;
+		}
+
+		.team1Name, .team2Name {
+			color: white;
+			position: static;
+			width: auto;
+			height: auto;
+			text-decoration: underline;
+		}
+
+		.team1Score, .team2Score {
+			color: white;
+			position: static;
+		}
+
+		.teamSelected {
+			color: #53aef5;
+			text-decoration: underline;
+		}
+
+		.scoreSelected {
+			color: #53aef5;
+			text-decoration: none;
+		}
+
+		.displayContainer {
+			position: fixed;
+			top: 100px;
+			margin: 0 auto;
+			height: auto;
+			width: 400px;
+			text-align: center;
+		}
+
+		.roundInformation {
+			font-size: 16px;
+			color: rgba(255, 255, 255, .4);
+			margin-bottom: 4px;
+		}
+
+		.question {
+			font-weight: bold;
+			font-size: 16px;
+		}
+
+		/*https://stackoverflow.com/questions/6865194/fluid-width-with-equally-spaced-divs*/
+		.optionsContainer {
+			position: absolute;
+			bottom: 10px;
+			left: 10px;
+			right: 10px;
+			height: 50%;
+			width: auto;
+		}
+
+		.optionBox:hover {
+			background-color: rgba(0, 0, 0, .15) ;
+		}
+
+		.optionBox:active {
+			background-color: rgba(0, 0, 0, .5);
+			color: #53aef5;
+		}
+
+		.optionBox {
+			position: absolute;
+			height: 47.5%;
+			width: 48%;
+			border: 2px solid gray;
+			background-color: rgba(255, 255, 255, .15);
+		}
+
+		.optionBoxA {
+			left: 0;
+			top: 0;
+		}
+
+		.optionBoxB {
+			right: 0;
+			top: 0;
+		}
+
+		.optionBoxC {
+			left: 0;
+			bottom: 0;
+		}
+
+		.optionBoxD {
+			right: 0;
+			bottom: 0;
+		}
+
+		.optionLetterText {
+			position: absolute;
+			font-size: 36px;
+			top: 30px;
+			left: 30px;
+		}
+
+		.optionValue {
+			position: absolute;
+			top: 80px;
+			left: 30px;
+		}
+
+		/* modal */
+		/* The Modal (background) */
+		.modal {
+		    display: none; /* Hidden by default */
+		    position: fixed; /* Stay in place */
+		    z-index: 1; /* Sit on top */
+		    left: 0;
+		    top: 0;
+		    width: 100%; /* Full width */
+		    height: 100%; /* Full height */
+		    overflow: auto; /* Enable scroll if needed *//*
+		    background-color: rgb(0,0,0); /* Fallback color */
+		    /*background-color: rgba(0,0,0,0.5); /* Black w/ opacity */*/
+		}
+
+		/* Modal Content/Box  */
+		.answerFeedbackModal {
+		    background-color: black;
+		    color: white;
+		    font-size: 14px;
+		    height: 150px;
+		    width: 150px;		    
+		    padding: 20px;
+		    border-radius: 15px;
+			position: absolute;
+	    	left: 50%;
+		    top: 37%;
+		    -moz-transform: translate(-50%, -37%);
+		    -webkit-transform: translate(-50%, -37%);
+		    -o-transform: translate(-50%, -37%);
+		    transform: translate(-50%, -37%);
+		    text-align: center;
+		}
+
+		.answerFeedbackModalImage {
+			position: absolute;
+			width: 70px;
+			height: 70px;
+			left: 50%;
+			top: 30%;
+		    transform: translate(-50%, -30%);
+		}
+
+		.answerFeedbackText {
+			position: relative;
+			margin-top: 100px;
+		}
+
+		.correctAnswerStyle {
+			border-color: #b3eb87;
+			border-width: 2px;
+		}
+
+		.wrongAnswerStyle {
+			border-color: #ee3740;
+			border-width: 2px;
+		}
+
+		.timesUpSecondStyle {
+			color: #ee3740;
+		}
+
+	</style>
+
+	<script type="text/javascript">
+		function getUrlParameter(queryParam) {
+			var url = decodeURIComponent(window.location.search.substring(1));
+			var urlParams = url.split('&');
+			var paramName;
+			var i;
+			for (i = 0; i < urlParams.length; i++) {
+				paramName = urlParams[i].split('=');
+				if (paramName[0] === queryParam) {
+					return paramName[1] === undefined ? true : paramName[1];
+				}
+			}
+		};
+	</script>
+
+
+</head>
+
+<body>
+	<!-- ALERTS: https://www.w3schools.com/howto/howto_js_alert.asp -->
+	<div id="container" class="container">
+
+		<div id="myModal" class="modal">
+
+		  <!-- Modal content -->
+		  <div class="answerFeedbackModal">
+		    <img id="answerFeedbackModalImage" class="answerFeedbackModalImage"
+		   	 src="assets/thumbs_up.png">
+		   	 <div id="answerFeedbackText" class="answerFeedbackText">
+		   	 Correct!
+		   	 </div>
+		  </div>
+
+		</div>
+
+		<!-- Central container with round number, question and graphic -->
+		<div id="displayContainer" class="displayContainer">
+			<div id="roundInformation" class="roundInformation"></div>
+			<div id="question" class="question">What song is this?</div>
+			<div id="questionImage" class="questionImage"></div>
+		</div>
+
+		<!-- Timer -->
+		<div id="timer" class="timer">
+			<div id="secondsLeftText" class="secondsLeftText">
+			</div>
+		</div>
+
+		<!-- Team Name and Scoring-->
+		<div id="team1Container" class="team1Container">
+			<div id="team1Name" class="teamScoreText team1Name">
+			Team 1
+			</div>
+			<div id="team1Score" class="teamScoreText team1Score">
+			0
+			</div>
+		</div>
+
+		<div id="team2Container" class="team2Container">
+			<div id="team2Name" class="teamScoreText team2Name">
+			Team 2
+			</div>
+			<div id="team2Score" class="teamScoreText team2Score">
+			0
+			</div>
+		</div>
+
+		<!-- Answer Options Cards -->
+		<div id="optionsContainer" class="optionsContainer">
+			<div id="optionBoxA" class="optionBox optionBoxA">
+				<div id="optionLetterText" class="optionLetterText">
+					A
+				</div>
+				<div id="answerOptionA" class="optionValue">
+					Option Value
+				</div>
+			</div>
+
+			<div id="optionBoxB" class="optionBox optionBoxB">
+				<div id="optionLetterText" class="optionLetterText">
+					B
+				</div>
+				<div id="answerOptionB" class="optionValue">
+					Option Value
+				</div>
+			</div>
+
+			<div id="optionBoxC" class="optionBox optionBoxC">
+				<div id="optionLetterText" class="optionLetterText">
+					C
+				</div>
+				<div id="answerOptionC" class="optionValue">
+					Option Value
+				</div>
+			</div>
+
+			<div id="optionBoxD" class="optionBox optionBoxD">
+				<div id="optionLetterText" class="optionLetterText">
+					D
+				</div>
+				<div id="answerOptionD" class="optionValue">
+					Option Value
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+
+		var AnswerFeedback = {
+			'Correct' : 'correct',
+			'Incorrect' : 'incorrect',
+			'TimesUp' : 'timesUp'
+		}
+
+	    var TeamID = {
+	    	'One' : 'team1',
+	    	'Two' : 'team2'
+	    };
+
+		function Team(id, name, score, divIdOfTeamName, divIdOfScore) {
+			this.id = id;
+			this.name = name;
+			this.score = score;
+			this.divIdOfTeamName = divIdOfTeamName;
+			this.divIdOfScore = divIdOfScore;
+		};
+
+		function Game() {
+			var team1Name = getUrlParameter('team1') || 'Team 1';
+			var team2Name = getUrlParameter('team2') || 'Team 2';
+			console.log('team1Name', team1Name);
+			var team1 = new Team(TeamID.One, team1Name, 0, 'team1Name', 'team1Score');
+			var team2 = new Team(TeamID.Two, team2Name, 0, 'team2Name', 'team2Score');
+			this.teams = [ team1, team2 ];
+			this.totalRounds = 2;
+			this.secondsPerRound = 2;
+			this.currentRound;
+			this.currentTeamGuessing;
+			this.secondsLeftInRound;
+			this.currentRoundHasEnded;
+		};
+
+		Game.prototype.calculateCurrentTeamGuessingBasedOnRoundsAndNumberOfTeams = function() {
+			var indexOfTheGuessingTeam = (this.currentRound - 1) % this.teams.length;
+			return this.teams[indexOfTheGuessingTeam];
+		};
+
+		Game.prototype.startGame = function() {
+			console.log('Starting game.');
+			this.currentRound = 1;
+			this.currentTeamGuessing = this.calculateCurrentTeamGuessingBasedOnRoundsAndNumberOfTeams();
+			this.secondsLeftInRound = this.secondsPerRound;
+			this.currentRoundHasEnded = false;
+			this.model = new Model();
+			var self = this;
+			this.display = new Display(this.teams, function(answerOptionValue) {
+					self.onAnswerSelected(answerOptionValue);
+				});
+			this.display.displayNewRound(this.currentRound, this.totalRounds, this.currentTeamGuessing, this.teams[1]);
+			this.setTimer();
+		};
+
+		Game.prototype.onAnswerSelected = function(answerOptionValue) {
+			if (this.currentRoundHasEnded) {
+				return;
+			}
+			console.log('option box selected: ' + answerOptionValue);
+			var model = new Model();
+			console.log('round', this.currentRound);
+			console.log('team', this.currentTeamGuessing);
+			if (answerOptionValue === model.rounds[this.currentRound-1].correctAnswer) {
+				this.updateScoreOfCurrentTeamGuessing(this.currentTeamGuessing);
+				this.display.showAnswerFeedbackModal(AnswerFeedback.Correct);
+				// alert('Correct!');
+			} else {
+				// alert('False!');
+				this.display.showAnswerFeedbackModal(AnswerFeedback.Incorrect);
+			}
+			self.currentRoundHasEnded = true;
+			var self = this;
+			setTimeout(function() {
+				self.handleEndOfRound();
+			}, 3500);
+		};
+
+		Game.prototype.handleEndOfRound = function() {
+			if (this.currentRound === this.totalRounds ) {
+				alert('Game has ended.');
+				return;
+			} else {
+				this.startANewRound();
+			}
+		};
+
+		Game.prototype.startANewRound = function() {
+			console.log('startANewRound');
+			var lastTeamGuessing = this.currentTeamGuessing;
+			this.currentRound++;
+			this.currentTeamGuessing = this.calculateCurrentTeamGuessingBasedOnRoundsAndNumberOfTeams();
+			this.secondsLeftInRound = this.secondsPerRound;
+			this.currentRoundHasEnded = false;
+			this.display.displayNewRound(this.currentRound, this.totalRounds, this.currentTeamGuessing, lastTeamGuessing);
+			this.setTimer();
+			this.currentRoundHasEnded = false;
+		};
+
+		Game.prototype.updateScoreOfCurrentTeamGuessing = function(team) {
+			team.score++;
+			this.display.updateTeamScore(team);
+		};
+
+		Game.prototype.setTimer = function() {
+			var self = this;
+
+			var intervalId = setInterval(function() {
+				if (self.secondsLeftInRound === 0) {
+					self.onTimerEnded(intervalId);
+				}
+				document.getElementById('secondsLeftText').innerHTML = self.convertSecondsLeftToDisplayText(self.secondsLeftInRound);
+				self.secondsLeftInRound--;
+
+			}, 1000);
+		};
+
+		Game.prototype.convertSecondsLeftToDisplayText = function (secondsLeft) {
+			var displayText;
+			if (secondsLeft < 10) {
+				return '00:0' + secondsLeft;
+			} 
+			return '00:' + secondsLeft;
+		};
+
+		Game.prototype.onTimerEnded = function(intervalId) {
+			document.getElementById('secondsLeftText').innerHTML = '00:00';
+			document.getElementById('secondsLeftText').classList.add('timesUpSecondStyle');
+			clearInterval(intervalId);
+			var self = this;
+			self.currentRoundHasEnded = true;
+			setTimeout(function() {
+				self.display.showAnswerFeedbackModal(AnswerFeedback.TimesUp);
+			}, 1000);
+
+			setTimeout(function() {
+				self.handleEndOfRound();
+			}, 4000);
+		};
+
+		function Display(teams, onAnswerSelected) {
+			this.onAnswerSelected = onAnswerSelected;
+			this.setUpStaticDisplayElements(teams);
+		};
+
+		Display.prototype.showAnswerFeedbackModal = function(answerFeedback) {
+
+			var modal = document.getElementById('myModal');
+
+			var answerFeedbackText = document.getElementById('answerFeedbackText');
+			var answerFeedbackModalImage = document.getElementById('answerFeedbackModalImage');
+			var imageSrc = 'assets/';
+			var textToDisplay;
+			if (answerFeedback === AnswerFeedback.Correct) {
+				textToDisplay = 'Correct!';
+				imageSrc += 'thumbs_up.png' 
+			} else if (answerFeedback === AnswerFeedback.Incorrect) {
+				textToDisplay = 'Incorrect!';
+				imageSrc += 'thumbs_down.png';
+			} else {
+				textToDisplay = 'Time\'s Up!';
+				imageSrc += 'timer.png';
+			}
+			answerFeedbackText.innerHTML = textToDisplay;
+			answerFeedbackModalImage.src = imageSrc;
+			modal.style.display = "block";
+
+			setTimeout(function() {
+		        $("#myModal").fadeOut(3000);
+			}, 500);
+		}
+
+		// Modal can be exited by clicking
+		window.onclick = function(event) {
+			var modal = document.getElementById('myModal');
+		    if (event.target == modal) {
+		        modal.style.display = "none";
+		        // $("#myModal").fadeOut(3000);
+		    }
+		}
+
+		Display.prototype.setUpStaticDisplayElements = function(teams) {
+			var team1 = teams[0];
+			var team2 = teams[1];
+			this.setTextOfElement(team1.divIdOfTeamName, team1.name);
+			this.setTextOfElement(team2.divIdOfTeamName, team2.name);
+		}
+
+		Display.prototype.displayNewRound = function(currentRound, totalRounds, currentTeamGuessing, lastTeamGuessing)
+		{
+			console.log('displayNewRound');
+			var model = new Model();
+			this.displayConfiguration = model.rounds[currentRound-1];
+			this.displayRoundInformation(currentRound, totalRounds);
+			this.highlightTeamThatIsGuessing(currentTeamGuessing);
+			this.undoHighlightOfLastTeamThatIsGuessing(lastTeamGuessing);
+			this.fillCardsWithAnswerOptions();
+			document.getElementById('secondsLeftText').classList.remove('timesUpSecondStyle');
+		};
+
+		Display.prototype.displayRoundInformation = function(currentRound, totalRounds) {
+			this.setTextOfElement('roundInformation', currentRound + ' of ' + totalRounds);
+		};
+
+		Display.prototype.highlightTeamThatIsGuessing = function(currentTeamGuessing) {
+			var teamName = currentTeamGuessing.divIdOfTeamName;
+			var teamScore = currentTeamGuessing.divIdOfScore;
+			document.getElementById(teamName).classList.add('teamSelected');
+			document.getElementById(teamScore).classList.add('scoreSelected');
+		};
+
+		Display.prototype.undoHighlightOfLastTeamThatIsGuessing = function(lastTeamGuessing) {
+			var teamName = lastTeamGuessing.divIdOfTeamName;
+			var teamScore = lastTeamGuessing.divIdOfScore;
+			console.log('removing last team guessing' + lastTeamGuessing.id);
+			document.getElementById(teamName).classList.remove('teamSelected');
+			document.getElementById(teamScore).classList.remove('scoreSelected');
+		}
+
+		Display.prototype.fillCardsWithAnswerOptions = function() {
+			this.setOnClickListenerOfElement('optionBoxA', this.displayConfiguration.answerOptionA);
+			this.setOnClickListenerOfElement('optionBoxB', this.displayConfiguration.answerOptionB);
+			this.setOnClickListenerOfElement('optionBoxC', this.displayConfiguration.answerOptionC);
+			this.setOnClickListenerOfElement('optionBoxD', this.displayConfiguration.answerOptionD);
+			this.setTextOfElement('answerOptionA', this.displayConfiguration.answerOptionA);
+			this.setTextOfElement('answerOptionB', this.displayConfiguration.answerOptionB);
+			this.setTextOfElement('answerOptionC', this.displayConfiguration.answerOptionC);
+			this.setTextOfElement('answerOptionD', this.displayConfiguration.answerOptionD);
+		};
+
+		Display.prototype.updateTeamScore = function(team) {
+			this.setTextOfElement(team.divIdOfScore, team.score);
+		};
+
+		Display.prototype.setTextOfElement = function(elementId, text) {
+			document.getElementById(elementId).innerHTML = text;
+		};
+
+		Display.prototype.setOnClickListenerOfElement = function(elementId, answerOptionValue) {
+			var self = this;
+			document.getElementById(elementId).addEventListener('click', function() {
+					self.onAnswerSelected(answerOptionValue);
+			});
+		};
+
+		function Model() {
+			var round1 = new DisplayConfigurationRound1();
+			var round2 = new DisplayConfigurationRound2();
+			this.rounds = [ round1, round2 ];
+		};
+
+		function DisplayConfigurationRound1() {
+			this.question = 'What song is this?';
+			this.songUrl = '';
+			this.answerOptionA = 'Love Story';
+			this.answerOptionB = 'Viva La Vida';
+			this.answerOptionC = 'You Really Got Me';
+			this.answerOptionD = 'All Star';
+			this.correctAnswer= this.answerOptionA;
+		};
+
+		function DisplayConfigurationRound2() {
+			this.question = 'What song is this?';
+			this.songUrl = '';
+			this.answerOptionA = 'Hands To Myself';
+			this.answerOptionB = 'What Makes You Beautiful';
+			this.answerOptionC = 'Kiss Me';
+			this.answerOptionD = 'Baby';
+			this.correctAnswer = this.answerOptionB;
+		};
+
+		var game = new Game();
+		game.startGame();
+
+	</script>
+
+</body>
+
+</html>

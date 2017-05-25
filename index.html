@@ -39,6 +39,7 @@
 			border-radius: 15px;
 			height: 30px;
 			width: 80px;
+			padding-top: 1px;
 		}
 
 		.secondsLeftText {
@@ -46,42 +47,43 @@
 			font-size: 20px;
 			text-align: center;
 			vertical-align: center;
-			margin-top: 5px;
+			margin-top: 2px;
 		}
 
 		.teamScoreText {
 			font-size: 20px;
-			top: 50px;
 			text-align: center;
 		}
 
-		.team1Text {
-			color: white;
+		.team1Container {
 			position: absolute; 
-			width: auto;
-			height: auto;
+			top: 50px;
 			left: 50px;
-		}
-
-		.team1Score {
-			color: white;
-			position: relative; 
-			top: 15px;
-		}
-
-		.team2Text {
-			color: white;
-			position: absolute; 
 			width: auto;
 			height: auto;
-			right: 50px;
-			text-align: right;
+			vertical-align: center;
 		}
 
-		.team2Score {
+		.team2Container {
+			position: absolute; 
+			top: 50px;
+			right: 50px;
+			width: auto;
+			height: auto;
+			vertical-align: center;
+		}
+
+		.team1Name, .team2Name {
 			color: white;
-			position: relative; 
-			top: 15px;
+			position: static;
+			width: auto;
+			height: auto;
+			text-decoration: underline;
+		}
+
+		.team1Score, .team2Score {
+			color: white;
+			position: static;
 		}
 
 		.teamSelected {
@@ -101,6 +103,15 @@
 			height: auto;
 			width: 400px;
 			text-align: center;
+		}
+
+		.roundInformation {
+			font-size: 16px;
+			color: rgba(255, 255, 255, .4);
+			margin-bottom: 4px;
+		}
+
+		.question {
 			font-weight: bold;
 			font-size: 20px;
 		}
@@ -163,31 +174,39 @@
 	<!-- ALERTS: https://www.w3schools.com/howto/howto_js_alert.asp -->
 	<div id="container" class="container">
 
+		<!-- Central container with round number, question and graphic -->
 		<div id="displayContainer" class="displayContainer">
-			1 of 5
-			<br>
-			What song is this?
+			<div id="roundInformation" class="roundInformation"></div>
+			<div id="question" class="question">What song is this?</div>
+			<div id="questionImage" class="questionImage"></div>
 		</div>
 
+		<!-- Timer -->
 		<div id="timer" class="timer">
 			<div id="secondsLeftText" class="secondsLeftText">
 			</div>
 		</div>
 
-		<div id="team1Name" class="teamScoreText team1Text">
-			TEAM 1
-			<div id="team1Score" class="teamScoreText">
-				0
+		<!-- Team Name and Scoring-->
+		<div id="team1Container" class="team1Container">
+			<div id="team1Name" class="teamScoreText team1Name">
+			Team 1
+			</div>
+			<div id="team1Score" class="teamScoreText team1Score">
+			0
 			</div>
 		</div>
 
-		<div id="team2Name" class="teamScoreText team2Text">
-			TEAM 2
-			<div id="team2Score" class="teamScoreText">
-				0
+		<div id="team2Container" class="team2Container">
+			<div id="team2Name" class="teamScoreText team2Name">
+			Team 2
+			</div>
+			<div id="team2Score" class="teamScoreText team2Score">
+			0
 			</div>
 		</div>
 
+		<!-- Answer Options Cards -->
 		<div id="optionsContainer" class="optionsContainer">
 			<div id="optionBoxA" class="optionBox optionBoxA">
 				<div id="optionLetterText" class="optionLetterText">
@@ -240,29 +259,38 @@
 			this.score = score;
 			this.divIdOfTeamName = divIdOfTeamName;
 			this.divIdOfScore = divIdOfScore;
-		}
+		};
 
 		function Game() {
 			var team1 = new Team(TeamID.One, 'My Team 1', 0, 'team1Name', 'team1Score');
 			var team2 = new Team(TeamID.Two, 'My Team 2', 0, 'team2Name', 'team2Score');
 			this.teams = [ team1, team2 ];
-			this.currentTeamGuessing = team1; 
-			this.currentRound = 1;
 			this.totalRounds = 2;
-			this.secondsLeftInRound = 30;
-			this.currentRoundHasEnded = false;
-		}
+			this.currentRound;
+			this.currentTeamGuessing;
+			this.secondsLeftInRound;
+			this.currentRoundHasEnded;
+		};
+
+		Game.prototype.calculateCurrentTeamGuessingBasedOnRoundsAndNumberOfTeams = function() {
+			var indexOfTheGuessingTeam = (this.currentRound - 1) % this.teams.length;
+			return this.teams[indexOfTheGuessingTeam];
+		};
 
 		Game.prototype.startGame = function() {
-			console.log('Starting game. Round: ' + this.currentRound + ' Team Guessing: ' + this.currentTeamGuessing.id);
+			console.log('Starting game.');
+			this.currentRound = 1;
+			this.currentTeamGuessing = this.calculateCurrentTeamGuessingBasedOnRoundsAndNumberOfTeams();
+			this.secondsLeftInRound = 30;
+			this.currentRoundHasEnded = false;
 			this.model = new Model();
 			var self = this;
-			this.display = new Display(function(answerOptionValue) {
+			this.display = new Display(this.teams, function(answerOptionValue) {
 					self.onAnswerSelected(answerOptionValue);
 				});
-			this.display.displayNewRound(this.currentRound, this.currentTeamGuessing);
+			this.display.displayNewRound(this.currentRound, this.totalRounds, this.currentTeamGuessing, this.teams[1]);
 			this.setTimer();
-		}
+		};
 
 		Game.prototype.onAnswerSelected = function(answerOptionValue) {
 			if (this.currentRoundHasEnded) {
@@ -272,13 +300,33 @@
 			var model = new Model();
 			console.log('round', this.currentRound);
 			console.log('team', this.currentTeamGuessing);
-			if (answerOptionValue === model.rounds[this.currentRound].correctAnswer) {
+			if (answerOptionValue === model.rounds[this.currentRound-1].correctAnswer) {
 				this.updateScoreOfCurrentTeamGuessing(this.currentTeamGuessing);
 				alert('Correct!');
 			} else {
 				alert('False!');
 			}
 			this.currentRoundHasEnded = true;
+			this.handleEndOfRound();
+		};
+
+		Game.prototype.handleEndOfRound = function() {
+			if (this.currentRound === this.totalRounds ) {
+				alert('Game has ended.');
+				return;
+			} else {
+				this.startANewRound();
+			}
+		};
+
+		Game.prototype.startANewRound = function() {
+			var lastTeamGuessing = this.currentTeamGuessing;
+			this.currentRound++;
+			this.currentTeamGuessing = this.calculateCurrentTeamGuessingBasedOnRoundsAndNumberOfTeams();
+			this.secondsLeftInRound = 30;
+			this.currentRoundHasEnded = false;
+			this.display.displayNewRound(this.currentRound, this.totalRounds, this.currentTeamGuessing, lastTeamGuessing);
+			this.currentRoundHasEnded = false;
 		};
 
 		Game.prototype.updateScoreOfCurrentTeamGuessing = function(team) {
@@ -305,59 +353,86 @@
 				return '00:0' + secondsLeft;
 			} 
 			return '00:' + secondsLeft;
-		}
+		};
 
 		Game.prototype.onTimerEnded = function(intervalId) {
 			document.getElementById('secondsLeftText').innerHTML = '00:00';
 			clearInterval(intervalId);
 			alert('Time\'s up!');
-		}
+		};
 
-		function Display(onAnswerSelected) {
+		function Display(teams, onAnswerSelected) {
 			this.onAnswerSelected = onAnswerSelected;
+			this.setUpStaticDisplayElements(teams);
+		};
+
+		Display.prototype.setUpStaticDisplayElements = function(teams) {
+			var team1 = teams[0];
+			var team2 = teams[1];
+			this.setTextOfElement(team1.divIdOfTeamName, team1.name);
+			this.setTextOfElement(team2.divIdOfTeamName, team2.name);
 		}
 
-		Display.prototype.displayNewRound = function(currentRound, currentTeamGuessing)
+		Display.prototype.displayNewRound = function(currentRound, totalRounds, currentTeamGuessing, lastTeamGuessing)
 		{
 			var model = new Model();
-			this.displayConfiguration = model.rounds[currentRound];
+			this.displayConfiguration = model.rounds[currentRound-1];
+			this.displayRoundInformation(currentRound, totalRounds);
 			this.highlightTeamThatIsGuessing(currentTeamGuessing);
+			this.undoHighlightOfLastTeamThatIsGuessing(lastTeamGuessing);
 			this.fillCardsWithAnswerOptions();
-		}
+		};
+
+		Display.prototype.displayRoundInformation = function(currentRound, totalRounds) {
+			this.setTextOfElement('roundInformation', currentRound + ' of ' + totalRounds);
+		};
 
 		Display.prototype.highlightTeamThatIsGuessing = function(currentTeamGuessing) {
 			var teamName = currentTeamGuessing.divIdOfTeamName;
+			var teamScore = currentTeamGuessing.divIdOfScore;
 			document.getElementById(teamName).classList.add('teamSelected');
+			document.getElementById(teamScore).classList.add('scoreSelected');
+		};
+
+		Display.prototype.undoHighlightOfLastTeamThatIsGuessing = function(lastTeamGuessing) {
+			var teamName = lastTeamGuessing.divIdOfTeamName;
+			var teamScore = lastTeamGuessing.divIdOfScore;
+			console.log('removing last team guessing' + lastTeamGuessing.id);
+			document.getElementById(teamName).classList.remove('teamSelected');
+			document.getElementById(teamScore).classList.remove('scoreSelected');
 		}
 
 		Display.prototype.fillCardsWithAnswerOptions = function() {
 			this.setOnClickListenerOfElement('optionBoxA', this.displayConfiguration.answerOptionA);
 			this.setOnClickListenerOfElement('optionBoxB', this.displayConfiguration.answerOptionB);
+			this.setOnClickListenerOfElement('optionBoxC', this.displayConfiguration.answerOptionC);
+			this.setOnClickListenerOfElement('optionBoxD', this.displayConfiguration.answerOptionD);
 			this.setTextOfElement('answerOptionA', this.displayConfiguration.answerOptionA);
 			this.setTextOfElement('answerOptionB', this.displayConfiguration.answerOptionB);
+			this.setTextOfElement('answerOptionC', this.displayConfiguration.answerOptionC);
+			this.setTextOfElement('answerOptionD', this.displayConfiguration.answerOptionD);
 		};
 
 		Display.prototype.updateTeamScore = function(team) {
 			this.setTextOfElement(team.divIdOfScore, team.score);
-		}
+		};
 
 		Display.prototype.setTextOfElement = function(elementId, text) {
 			document.getElementById(elementId).innerHTML = text;
-		}
+		};
 
 		Display.prototype.setOnClickListenerOfElement = function(elementId, answerOptionValue) {
 			var self = this;
 			document.getElementById(elementId).addEventListener('click', function() {
 					self.onAnswerSelected(answerOptionValue);
 			});
-		}
+		};
 
 		function Model() {
 			var round1 = new DisplayConfigurationRound1();
 			var round2 = new DisplayConfigurationRound2();
-
 			this.rounds = [ round1, round2 ];
-		}
+		};
 
 		function DisplayConfigurationRound1() {
 			this.question = 'What song is this?';
@@ -367,7 +442,7 @@
 			this.answerOptionC = 'You Really Got Me';
 			this.answerOptionD = 'All Star';
 			this.correctAnswer= this.answerOptionA;
-		}
+		};
 
 		function DisplayConfigurationRound2() {
 			this.question = 'What song is this?';
@@ -377,7 +452,7 @@
 			this.answerOptionC = 'Kiss Me';
 			this.answerOptionD = 'Baby';
 			this.correctAnswer = this.answerOptionB;
-		}
+		};
 
 		var game = new Game();
 		game.startGame();

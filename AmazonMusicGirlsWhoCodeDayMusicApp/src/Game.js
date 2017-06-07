@@ -26,6 +26,7 @@
 		this.totalRounds = 4;
 		this.secondsPerRound = 10;
 		this.currentRound;
+		this.numTeamsThatHaveGoneThisRound;
 		this.currentTeamGuessing;
 		this.secondsLeftInRound;
 		this.currentRoundHasEnded;

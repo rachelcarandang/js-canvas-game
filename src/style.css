@@ -251,6 +251,48 @@ body, html {
     text-align: center;
 }
 
+.startOfRoundModal {
+	position: absolute;
+	text-align: center;
+	width: auto;
+	height: auto;
+	left: 50%;
+	top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.startOfRoundText {
+	position: static;
+	margin-top: 32px;
+	font-weight: bold;
+	font-size: 20px;
+}
+
+.startOfRoundTeam {
+	margin-top: 32px;
+	font-weight:bold;
+	font-size: 36px;
+}
+
+.startOfRoundBox {
+	margin-top: 32px;
+	background-color: white;
+	color: black;
+	padding-left: 6px;
+	padding-right: 6px;
+	padding-top: 2px;
+	padding-bottom: 1px;
+	height: 36px;
+	line-height: 36px;
+}
+
+.startOfRoundNumber {
+	font-weight:bold;
+	font-size: 20px;
+	margin-bottom: 24px;
+	vertical-align: middle;
+}
+
 .endGameModalContainer {
 	position: absolute;
 	text-align: center;

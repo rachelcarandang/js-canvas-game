@@ -60,6 +60,36 @@
 		    }
 		}
 
+	Display.prototype.showStartOfRoundModal = function() {
+			var modal = document.getElementById('startOfRoundModal');
+			// var winner = document.getElementById('endGameWinner');
+			// if (winningTeam != null) {
+			// 	winner.innerHTML = winningTeam.name;
+			// } else {
+			// 	document.getElementById('endGameText').classList.add('hidden');
+			// 	winner.innerHTML = 'It\'s a Tie!';
+			// }
+			modal.style.display = "block";
+		};
+
+				// Modal can be exited by clicking
+		window.onclick = function(event) {
+			var modal = document.getElementById('endGameModal');
+		    if (event.target == modal) {
+		        modal.style.display = "none";
+		        // $("#myModal").fadeOut(3000);
+		    }
+		}
+
+		// Modal can be exited by clicking
+		window.onclick = function(event) {
+			var modal = document.getElementById('myModal');
+		    if (event.target == modal) {
+		        modal.style.display = "none";
+		        // $("#myModal").fadeOut(3000);
+		    }
+		}
+
 		Display.prototype.setUpStaticDisplayElements = function(teams) {
 			var team1 = teams[0];
 			var team2 = teams[1];

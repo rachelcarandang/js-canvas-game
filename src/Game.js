@@ -52,6 +52,8 @@
 		});
 		this.display.displayNewRound(this.currentRound, this.totalRounds, this.currentTeamGuessing, this.teams[1]);
 		this.setTimer();
+
+		// this.display.showStartOfRoundModal();
 	};
 
 	Game.prototype.onAnswerSelected = function(answerOptionValue) {

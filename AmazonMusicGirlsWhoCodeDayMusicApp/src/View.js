@@ -60,19 +60,13 @@
 		    }
 		}
 
-	Display.prototype.showStartOfRoundModal = function() {
+	Display.prototype.showStartOfRoundModal = function(team, roundNumber, totalRounds) {
 			var modal = document.getElementById('startOfRoundModal');
-			// var winner = document.getElementById('endGameWinner');
-			// if (winningTeam != null) {
-			// 	winner.innerHTML = winningTeam.name;
-			// } else {
-			// 	document.getElementById('endGameText').classList.add('hidden');
-			// 	winner.innerHTML = 'It\'s a Tie!';
-			// }
+			document.getElementById('startOfRoundTeam').innerHTML = team.name;
+			document.getElementById('startOfRoundNumber').innerHTML = 'Round ' + roundNumber + '/' + totalRounds;
 			modal.style.display = "block";
 		};
 
-				// Modal can be exited by clicking
 		window.onclick = function(event) {
 			var modal = document.getElementById('endGameModal');
 		    if (event.target == modal) {
@@ -81,12 +75,18 @@
 		    }
 		}
 
-		// Modal can be exited by clicking
 		window.onclick = function(event) {
 			var modal = document.getElementById('myModal');
 		    if (event.target == modal) {
 		        modal.style.display = "none";
 		        // $("#myModal").fadeOut(3000);
+		    }
+		}
+
+		window.onclick = function(event) {
+			var modal = document.getElementById('startOfRoundModal');
+		    if (event.target == modal) {
+		        modal.style.display = "none";
 		    }
 		}
 
@@ -107,6 +107,8 @@
 			this.audio = new Audio('https://www.amazon.com/gp/dmusic/get_sample_url.html?DownloadLocation=WEBSITE&ASIN=B006WWU924');
 			this.audio.play();
 			var model = new Model();
+
+			this.showStartOfRoundModal(currentTeamGuessing, currentRound, totalRounds);
 			this.displayConfiguration = model.rounds[currentRound-1];
 			this.displayRoundInformation(currentRound, totalRounds);
 			this.highlightTeamThatIsGuessing(currentTeamGuessing);

@@ -20,11 +20,10 @@
 	function Game() {
 		var team1Name = getUrlParameter('team1') || 'Team 1';
 		var team2Name = getUrlParameter('team2') || 'Team 2';
-		console.log('team1Name', team1Name);
 		var team1 = new Team(TeamID.One, team1Name, 0, 'team1Name', 'team1Score');
 		var team2 = new Team(TeamID.Two, team2Name, 0, 'team2Name', 'team2Score');
 		this.teams = [ team1, team2 ];
-		this.totalRounds = 1;
+		this.totalRounds = 4;
 		this.secondsPerRound = 10;
 		this.currentRound;
 		this.currentTeamGuessing;
@@ -52,8 +51,6 @@
 		});
 		this.display.displayNewRound(this.currentRound, this.totalRounds, this.currentTeamGuessing, this.teams[1]);
 		this.setTimer();
-
-		// this.display.showStartOfRoundModal();
 	};
 
 	Game.prototype.onAnswerSelected = function(answerOptionValue) {

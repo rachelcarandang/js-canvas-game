@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+
+<html>
+<head>	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="src/style.css"/>
+
+	<script type="text/javascript">
+		function getUrlParameter(queryParam) {
+			var url = decodeURIComponent(window.location.search.substring(1));
+			var urlParams = url.split('&');
+			var paramName;
+			var i;
+			for (i = 0; i < urlParams.length; i++) {
+				paramName = urlParams[i].split('=');
+				if (paramName[0] === queryParam) {
+					return paramName[1] === undefined ? true : paramName[1];
+				}
+			}
+		};
+	</script>
+
+
+</head>
+
+<body>
+	<!-- ALERTS: https://www.w3schools.com/howto/howto_js_alert.asp -->
+	<div id="container" class="container">
+
+		<div id="myModal" class="modal">
+
+		  <!-- Modal content -->
+		  <div class="answerFeedbackModal">
+		    <img id="answerFeedbackModalImage" class="answerFeedbackModalImage"
+		   	 src="assets/thumbs_up.png">
+		   	 <div id="answerFeedbackText" class="answerFeedbackText">
+		   	 Correct!
+		   	 </div>
+		  </div>
+
+		</div>
+
+		<div id="startOfRoundModal" class="blackTransparentModal">
+		 	<div id="startOfRoundModalContainer" class="startOfRoundModal">
+			   	 <div id="startOfRoundText" class="startOfRoundText">
+			   	 You're up next
+			   	 </div>
+			   	 <div id="startOfRoundTeam" class="startOfRoundTeam">
+			   	 Team 1
+			   	 </div>
+			   	 <div id="startOfRoundBox" class="startOfRoundBox">
+				   	 <div id="startOfRoundNumber" class="startOfRoundNumber">
+				   	 Round 1/5
+				   	 </div>
+			   	 </div>
+		   	 </div>
+
+		</div>
+
+		<div id="endGameModal" class="blackTransparentModal">
+		 	<div id="endGameModalContainer" class="endGameModalContainer">
+				<img id="endGameModalImage" class="endGameModalImage"
+			   	 src="assets/trophy.png">
+			   	 <div id="endGameText" class="endGameText">
+			   	 And the winner is...
+			   	 </div>
+			   	 <div id="endGameWinner" class="endGameWinner">
+			   	 </div>
+		   	 </div>
+		</div>
+
+		<!-- Central container with round number, question and graphic -->
+		<div id="displayContainer" class="displayContainer">
+				<!-- Timer -->
+			<div id="timer" class="timer">
+				<div id="secondsLeftText" class="secondsLeftText">
+				</div>
+			</div>
+			<div id="roundInformation" class="roundInformation"></div>
+			<div id="question" class="question">What song is this?</div>
+			<div id="questionImage" class="questionImage"></div>
+		</div>
+
+
+		<!-- Team Name and Scoring-->
+		<div id="team1Container" class="team1Container">
+			<div id="team1Name" class="teamScoreText team1Name">
+			Team 1
+			</div>
+			<div id="team1Score" class="teamScoreText team1Score">
+			0
+			</div>
+		</div>
+
+		<div id="team2Container" class="team2Container">
+			<div id="team2Name" class="teamScoreText team2Name">
+			Team 2
+			</div>
+			<div id="team2Score" class="teamScoreText team2Score">
+			0
+			</div>
+		</div>
+
+		<!-- Answer Options Cards -->
+		<div id="optionsContainer" class="optionsContainer">
+			<div id="optionBoxA" class="optionBox optionBoxA">
+				<div id="optionLetterText" class="optionLetterText">
+					A
+				</div>
+				<div id="answerOptionA" class="optionValue">
+					Option Value
+				</div>
+			</div>
+
+			<div id="optionBoxB" class="optionBox optionBoxB">
+				<div id="optionLetterText" class="optionLetterText">
+					B
+				</div>
+				<div id="answerOptionB" class="optionValue">
+					Option Value
+				</div>
+			</div>
+
+			<div id="optionBoxC" class="optionBox optionBoxC">
+				<div id="optionLetterText" class="optionLetterText">
+					C
+				</div>
+				<div id="answerOptionC" class="optionValue">
+					Option Value
+				</div>
+			</div>
+
+			<div id="optionBoxD" class="optionBox optionBoxD">
+				<div id="optionLetterText" class="optionLetterText">
+					D
+				</div>
+				<div id="answerOptionD" class="optionValue">
+					Option Value
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="src/Data.js"></script>
+	<script type="text/javascript" src="src/View.js"></script>
+	<script type="text/javascript" src="src/Game.js"></script>
+	<script type="text/javascript">
+		var game = new Game();
+		game.startGame();
+	</script>
+
+</body>
+
+</html>
